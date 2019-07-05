@@ -1,13 +1,13 @@
 package server.handle;
 
+import clink.net.qiujuer.clink.utils.CloseUtils;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Created by asus on 2019/7/4.
- */
+
 public class ClientHandler {
     private final Socket socket;
     private final ClientReadHandler readHandler;
@@ -42,7 +42,6 @@ public class ClientHandler {
         writeHandler.send(str);
     }
 
-
     public void readToPrint() {
         readHandler.start();
     }
@@ -56,10 +55,11 @@ public class ClientHandler {
             this.executorService = Executors.newSingleThreadExecutor();
         }
 
-        public void exit() {
+        void exit() {
             done = true;
             CloseUtils.close(printStream);
             executorService.shutdownNow();
+            System.out.println("退出 ClientWriteHandler" );
         }
 
         void send(String str) {
@@ -75,7 +75,7 @@ public class ClientHandler {
 
             @Override
             public void run() {
-                if(!ClientWriteHandler.this.done) {
+                if(ClientWriteHandler.this.done) {
                     return;
                 }
                 try {
@@ -103,21 +103,21 @@ public class ClientHandler {
                 // 得到输入流，用于接收数据
                 BufferedReader socketInput = new BufferedReader(new InputStreamReader(inputStream));
 
-                System.out.println(inputStream.toString());
-                System.out.println(socketInput.readLine());
+                // System.out.println(inputStream.toString());
+                // System.out.println(socketInput.readLine());
 
                 do {
                     // 客户端拿到一条数据
                     String str = socketInput.readLine();
-
+                    // ClientHandler.this.send(str);
                     if(str == null) {
-                        System.out.println("客户端已无法读取数据！");
+                        System.out.println("客户端已无法读取数据！收到：str -> " + str);
                         ClientHandler.this.exitBySelf();
                         break;
                     }
 
                     // 打印到屏幕
-                    System.out.println(str);
+                    System.out.println("收到数据: " + str);
                 } while (!done);
 
             } catch (IOException e) {

@@ -1,8 +1,7 @@
 package client;
 
 import client.bean.ServerInfo;
-import server.handle.ClientHandler;
-import server.handle.CloseUtils;
+import clink.net.qiujuer.clink.utils.CloseUtils;
 
 import java.io.*;
 import java.net.Inet4Address;
@@ -11,16 +10,16 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 /**
- * Created by asus on 2019/7/4.
+ * TCPClient
  */
 public class TCPClient {
     public static void linkWith(ServerInfo info) throws IOException {
         Socket socket = new Socket();
         // 超时时间
-        socket.setSoTimeout(3000);
+        socket.setSoTimeout(10000);
 
         // 连接本地端口，超时时间 3000ms
-        socket.connect(new InetSocketAddress(Inet4Address.getByName(info.getAddress()), info.getPort()), 3000);
+        socket.connect(new InetSocketAddress(Inet4Address.getByName(info.getAddress()), info.getPort()), 10000);
 
         System.out.println("已发起服务器连接，并进入后续流程~");
         System.out.println("客户端信息：" + socket.getLocalAddress() + "P：" + socket.getLocalPort());
@@ -29,10 +28,8 @@ public class TCPClient {
         try {
             ReadHandler readHandler = new ReadHandler(socket.getInputStream());
             readHandler.start();
-            System.out.println("readHandler 启动！");
             // 发送接收数据
             write(socket);
-            System.out.println("write(socket) 读取数据！");
 
             // 退出操作
             readHandler.exit();
@@ -53,14 +50,14 @@ public class TCPClient {
         // 得到Socket输入流，并转换为打印流
         OutputStream outputStream = client.getOutputStream();
         PrintStream socketPrintStream = new PrintStream(outputStream);
-        System.out.println("键盘读取一行！");
         do {
             // 键盘读取一行
             String str = input.readLine();
+            System.out.println("键盘读取一行！");
             // 发送到服务器
             socketPrintStream.println(str);
 
-            // 从服务器读取一行
+            // 退出 循环
             if("00bye00".equalsIgnoreCase(str)) {
                 break;
             }
@@ -92,7 +89,7 @@ public class TCPClient {
 
                     try {
                         str = socketInput.readLine();
-
+                        System.out.println("收到服务器消息：" + str);
                     } catch (SocketTimeoutException e) {
                         continue;
                     }
@@ -101,7 +98,7 @@ public class TCPClient {
                         break;
                     }
                     // 打印到屏幕
-                    System.out.println(str);
+                    // System.out.println(str);
                 } while (done);
             } catch (IOException e) {
                 if(!done) {

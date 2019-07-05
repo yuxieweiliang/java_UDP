@@ -130,7 +130,6 @@ public class UDPSearcher {
             try {
                 // 监听回送端口
                 ds = new DatagramSocket(listenPort);
-                System.out.println("UDPSearcher receive form ip:");
                 // 构建接收实体
                 DatagramPacket receivePack = new DatagramPacket(buffer, buffer.length);
                 System.out.println("UDPSearcher receive form ip:");

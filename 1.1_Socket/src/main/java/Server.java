@@ -5,18 +5,16 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * Created by asus on 2019/4/24.
- */
 public class Server {
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(2000); // 服务端监听2000端口
 
-        System.out.print("服务器准备就绪~");
+        System.out.print("服务器准备就绪\n");
         System.out.print("服务端信息：" + server.getInetAddress() + "p:" + server.getLocalPort());
 
         // 等待客户端连接
         for(;;) { // 无限循环
+            System.out.print("重新进入等待\n");
             Socket client = server.accept(); // 等待客户端连接2000端口
             ClientHandler clientHandler = new ClientHandler(client);
             clientHandler.start();
@@ -46,6 +44,7 @@ public class Server {
 
                 do{
                     String str = socketInput.readLine();
+                    System.out.println("读取一行！");
                     if("bye".equalsIgnoreCase(str)){
                         flag = false;
                         // 回送
@@ -54,7 +53,9 @@ public class Server {
                         System.out.println(str);
                         socketOutput.println("回送：" + str.length());
                     }
-                }while (flag);
+                } while (flag);
+
+                System.out.println("关闭流");
                 socketInput.close();
                 socketOutput.close();
             }catch (Exception e) {

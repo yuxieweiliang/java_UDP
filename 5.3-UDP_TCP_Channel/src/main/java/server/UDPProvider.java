@@ -8,14 +8,14 @@ import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-/**
- * Created by asus on 2019/7/4.
- */
-
 
 class UDPProvider {
     private static Provider PROVIDER_INSTANCE;
 
+    /**
+     * 构建一个 UDP 服务器
+     * 并且启动
+     */
     static void start(int port) {
         stop();
         String sn = UUID.randomUUID().toString();
@@ -24,6 +24,9 @@ class UDPProvider {
         PROVIDER_INSTANCE = provider;
     }
 
+    /**
+     * 关闭服务
+     */
     static void stop() {
         if (PROVIDER_INSTANCE != null) {
             PROVIDER_INSTANCE.exit();
@@ -31,6 +34,9 @@ class UDPProvider {
         }
     }
 
+    /**
+     * 封装 UDP 服务类
+     */
     private static class Provider extends Thread {
         private final byte[] sn;
         private final int port;
@@ -45,16 +51,18 @@ class UDPProvider {
             this.port = port;
         }
 
+        /**
+         * 启动
+         */
         @Override
         public void run() {
             super.run();
 
-            System.out.println("UDPProvider Started.");
-
+            System.out.println("UDP Provider Started.");
             try {
-                // 监听端口
+                // 创建 UDP 服务 | 监听 30201 端口
                 ds = new DatagramSocket(UDPConstants.PORT_SERVER);
-                // 接收消息的Packet
+                // 接收消息的 Packet（数据包）
                 DatagramPacket receivePack = new DatagramPacket(buffer, buffer.length);
 
                 while (!done) {
